@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HP Direct Print: An Overlooked Wireless Management Risk | Trent Miller</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Archivo:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --terminal-green: #00ff41;
+            --bg-dark: #0a0e17;
+            --bg-secondary: #131820;
+            --text-primary: #e4e6eb;
+            --text-secondary: #8b92a8;
+            --accent: #00ff41;
+            --accent-glow: rgba(0, 255, 65, 0.3);
+            --card-bg: #1a1f2e;
+            --border: #2a3142;
+            --code-bg: #0d1117;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Archivo', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        /* Navigation */
+        nav {
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+            padding: 20px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-brand {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .nav-brand:hover {
+            color: var(--accent);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.3s ease;
+            font-weight: 500;
+        }
+
+        .nav-links a:hover {
+            color: var(--accent);
+        }
+
+        /* Article Header */
+        .article-header {
+            padding: 60px 20px 40px;
+            background: linear-gradient(135deg, var(--bg-dark) 0%, var(--bg-secondary) 100%);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .article-header-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            margin-bottom: 30px;
+            transition: all 0.3s ease;
+        }
+
+        .back-link:hover {
+            color: var(--accent);
+            gap: 12px;
+        }
+
+        .article-title {
+            font-size: 2.8rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+
+        .article-meta {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .article-date {
+            color: var(--accent);
+        }
+
+        .article-tags {
+            display: flex;
+            gap: 10px;
+        }
+
+        .tag {
+            padding: 4px 12px;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-size: 0.85rem;
+        }
+
+        /* Article Content */
+        .article-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 60px 20px;
+        }
+
+        .article-content {
+            font-size: 1.1rem;
+            line-height: 1.8;
+        }
+
+        .article-content h2 {
+            font-size: 2rem;
+            margin-top: 50px;
+            margin-bottom: 20px;
+            color: var(--accent);
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        .article-content h2::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 2px;
+            background: var(--accent);
+            box-shadow: 0 0 10px var(--accent-glow);
+        }
+
+        .article-content h3 {
+            font-size: 1.5rem;
+            margin-top: 40px;
+            margin-bottom: 15px;
+            color: var(--text-primary);
+        }
+
+        .article-content p {
+            margin-bottom: 20px;
+        }
+
+        .article-content ul,
+        .article-content ol {
+            margin-bottom: 20px;
+            padding-left: 30px;
+        }
+
+        .article-content li {
+            margin-bottom: 10px;
+        }
+
+        .article-content a {
+            color: var(--accent);
+            text-decoration: none;
+            border-bottom: 1px solid transparent;
+            transition: border-color 0.3s ease;
+        }
+
+        .article-content a:hover {
+            border-bottom-color: var(--accent);
+        }
+
+        .article-content strong {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .article-content em {
+            color: var(--text-secondary);
+        }
+
+        /* Code Blocks */
+        .article-content code {
+            font-family: 'JetBrains Mono', monospace;
+            background: var(--code-bg);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.9em;
+            color: var(--accent);
+            border: 1px solid var(--border);
+        }
+
+        .article-content pre {
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 20px;
+            overflow-x: auto;
+            margin: 30px 0;
+        }
+
+        .article-content pre code {
+            background: none;
+            padding: 0;
+            border: none;
+            color: var(--text-primary);
+            font-size: 0.95em;
+        }
+
+        /* Blockquotes */
+        .article-content blockquote {
+            border-left: 3px solid var(--accent);
+            padding-left: 20px;
+            margin: 30px 0;
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+
+        /* Images */
+        .article-content img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin: 30px 0;
+            border: 1px solid var(--border);
+        }
+
+        /* Info Box */
+        .info-box {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-left: 3px solid var(--accent);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 30px 0;
+        }
+
+        .info-box strong {
+            color: var(--accent);
+        }
+
+        /* Navigation Footer */
+        .post-navigation {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            margin-top: 60px;
+            padding-top: 40px;
+            border-top: 1px solid var(--border);
+        }
+
+        .post-nav-link {
+            flex: 1;
+            padding: 20px;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            text-decoration: none;
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+        }
+
+        .post-nav-link:hover {
+            border-color: var(--accent);
+            box-shadow: 0 5px 20px rgba(0, 255, 65, 0.1);
+        }
+
+        .post-nav-link.prev {
+            text-align: left;
+        }
+
+        .post-nav-link.next {
+            text-align: right;
+        }
+
+        .post-nav-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 5px;
+        }
+
+        .post-nav-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border);
+            color: var(--text-secondary);
+            margin-top: 60px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-links {
+                gap: 20px;
+            }
+
+            .article-title {
+                font-size: 2rem;
+            }
+
+            .article-content {
+                font-size: 1.05rem;
+            }
+
+            .article-content h2 {
+                font-size: 1.6rem;
+            }
+
+            .article-content h3 {
+                font-size: 1.3rem;
+            }
+
+            .post-navigation {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <a href="../../index.html" class="nav-brand">Trent Miller</a>
+            <div class="nav-links">
+                <a href="../../index.html">Home</a>
+                <a href="../blog.html">Blog</a>
+                <a href="../../files/Resume.pdf">Resume</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Article Header -->
+    <header class="article-header">
+        <div class="article-header-content">
+            <a href="../blog.html" class="back-link">← Back to Blog</a>
+            <h1 class="article-title">HP Direct Print: An Overlooked Wireless Management Risk</h1>
+            <div class="article-meta">
+                <span class="article-date">February 6, 2026</span>
+                <div class="article-tags">
+                    <span class="tag">Penetration Testing</span>
+                    <span class="tag">Red Team</span>
+					<span class="tag">Blue Team</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Article Content -->
+    <div class="article-container">
+        <article class="article-content">
+            <!-- Introduction -->
+            <p>
+                Printers remain one of the most overlooked assets in many IT environments. They are often deployed quickly, persist for years, and rarely receive the same level of scrutiny as workstations or servers. At the same time, modern printers offer a wide range of controls and services that can be both a blessing and a curse.
+            </p>
+
+            <p>
+                During personal research involving a consumer HP printer, I took a closer look at HP Direct Print (HP’s implementation of direct wireless printing). While the feature is designed for convenience, its default behavior introduces risks to IT and security teams.
+            </p>
+
+            <!-- Main Section -->
+            <h2>HP Direct Print</h2>
+            
+            <p>
+				HP Direct Print provisions a printer with its own wireless network, allowing nearby devices to print directly without joining the primary wireless or wired network. This feature is commonly enabled by default and is intended to simplify printing in home and small-office environments.
+            </p>
+
+            <h3>Key characteristics include:</h3>
+            <ul>
+                <li>The printer advertises its own wireless network (the SSID typically appears as something like DIRECT-XX-Printer Model)</li>
+                <li>Devices connect directly to the printer, rather than through the LAN</li>
+                <li>A default password is used to connect to the network unless changed</li>
+                <li>The feature remains available even when the printer is already connected to an existing wireless or wired network</li>
+            </ul>
+            <p>
+                From a usability and convenience standpoint, this works as intended. From a security standpoint, it creates a second, often forgotten access path to the device.
+            </p>
+
+            <h2>HP Direct Print Testing</h2>
+            
+            <p>
+                Testing was conducted against an HP ENVY Photo series printer with the most recent firmware, using only physical proximity and default settings.
+            </p>
+
+            <p>
+                The following was observed when connecting to the Direct Print wireless network on a default printer:
+            </p>
+			<ul>
+                <li>The printer assigns an IP address on a private subnet (192.168.223.X/24)</li>
+                <li>Traffic from Direct Print clients is restricted to the printer (no device-to-device connections or LAN access)</li>
+                <li>The web management interface is accessible</li>
+                <li>SNMP is accessible using default community strings</li>
+				<li>Administrative changes made via SNMP are reflected in the web interface</li>
+				<li>Firmware update settings are accessible</li>
+            </ul>
+			<p>
+				In short, the Direct Print network is isolated from the rest of the infrastructure, but it still exposes management and printing interfaces.
+			</p>
+			
+			<h2>Why This Matters for IT and Security Teams</h2>
+			<p>
+				Although the Direct Print network does not provide direct network access to the internal LAN, the level of control exposed over this connection is significant if left uncontrolled. Direct Print effectively allows unauthenticated administrative access based solely on physical proximity. The default wireless password is trivial (12345678), and the feature is often enabled without awareness.
+			</p>
+			<p>
+				With default access to system-level controls, it may be possible for an unknown or future exploit to take hold within an otherwise secured network, using the printer as the entry point. Regardless of whether a working exploit is available, this level of access is high-risk and potentially high-impact.
+			</p>
+			<h2>Recommendations</h2>
+			<p>
+				The simplest and most effective mitigation is to disable HP Direct Print entirely unless there is a clear business requirement. This option is likely the strongest choice for most environments. 
+			</p>
+			<p>
+				The next most effective mitigation is to change default configurations, such as:
+			</p>
+			<ul>
+				<li>Setting strong administrative passwords</li>
+				<li>Disabling or restricting SNMP access</li>
+				<li>Treating printers as managed endpoints, not passive peripherals</li>
+			</ul>
+			<p>
+				In most environments, the convenience offered by Direct Print does not outweigh the associated risk.
+			</p>
+			<p>
+				HP Direct Print serves as a reminder that any management surface exposed (especially over wireless) is worth revisiting. Disabling unnecessary features remains one of the most effective defensive measures available.
+			</p>
+			
+            <!-- Post Navigation -->
+            <nav class="post-navigation">
+                <a href="../index.html" class="post-nav-link prev">
+                    <div class="post-nav-label">Home</div>
+                </a>
+            </nav>
+        </article>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2026 Trent Miller. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
