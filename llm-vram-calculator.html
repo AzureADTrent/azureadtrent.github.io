@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LLM VRAM Calculator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Barlow:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0c0f;
+    --surface: #111418;
+    --surface2: #1a1f26;
+    --border: #232b35;
+    --accent: #00e5ff;
+    --accent2: #ff6b35;
+    --green: #39ff14;
+    --yellow: #ffd600;
+    --red: #ff3d3d;
+    --text: #d4dde8;
+    --muted: #5a6a7a;
+    --mono: 'Share Tech Mono', monospace;
+    --sans: 'Barlow', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    min-height: 100vh;
+    background-image:
+      radial-gradient(ellipse at 10% 20%, rgba(0,229,255,0.04) 0%, transparent 50%),
+      radial-gradient(ellipse at 90% 80%, rgba(255,107,53,0.04) 0%, transparent 50%);
+  }
+
+  header {
+    border-bottom: 1px solid var(--border);
+    padding: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+  }
+
+  .logo {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    color: var(--accent);
+    line-height: 1.3;
+    letter-spacing: 0.05em;
+    opacity: 0.8;
+  }
+
+  header h1 {
+    font-size: 1.6rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: #fff;
+  }
+
+  header h1 span { color: var(--accent); }
+
+  .subtitle {
+    font-size: 0.85rem;
+    color: var(--muted);
+    font-weight: 300;
+    margin-top: 0.2rem;
+  }
+
+  main {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 2rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+  }
+
+  @media (max-width: 700px) {
+    main { grid-template-columns: 1fr; }
+  }
+
+  .panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1.5rem;
+  }
+
+  .panel-title {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    color: var(--accent);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .panel-title::before {
+    content: '';
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    background: var(--accent);
+    border-radius: 50%;
+    box-shadow: 0 0 8px var(--accent);
+  }
+
+  label {
+    display: block;
+    font-size: 0.78rem;
+    color: var(--muted);
+    margin-bottom: 0.4rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .field { margin-bottom: 1.2rem; }
+
+  input[type="number"], select {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 1rem;
+    padding: 0.6rem 0.8rem;
+    border-radius: 3px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  input[type="number"]:focus, select:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px rgba(0,229,255,0.1);
+  }
+
+  select option { background: var(--surface2); }
+
+  .quant-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.5rem;
+    margin-bottom: 1.2rem;
+  }
+
+  .quant-btn {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    padding: 0.5rem 0.3rem;
+    border-radius: 3px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.15s;
+  }
+
+  .quant-btn:hover { border-color: var(--accent); color: var(--text); }
+  .quant-btn.active {
+    background: rgba(0,229,255,0.1);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .preset-select { margin-bottom: 1.2rem; }
+
+  /* Results panel spans full width */
+  .results-panel {
+    grid-column: 1 / -1;
+  }
+
+  .result-main {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  @media (max-width: 600px) {
+    .result-main { grid-template-columns: 1fr 1fr; }
+  }
+
+  .stat-box {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 1rem;
+  }
+
+  .stat-label {
+    font-size: 0.7rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.4rem;
+  }
+
+  .stat-value {
+    font-family: var(--mono);
+    font-size: 1.6rem;
+    font-weight: 400;
+    color: var(--accent);
+  }
+
+  .stat-value.warn { color: var(--yellow); }
+  .stat-value.danger { color: var(--red); }
+  .stat-value.ok { color: var(--green); }
+
+  .stat-sub {
+    font-size: 0.72rem;
+    color: var(--muted);
+    margin-top: 0.2rem;
+  }
+
+  .breakdown {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .breakdown-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.35rem 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.85rem;
+  }
+
+  .breakdown-row:last-child { border-bottom: none; }
+  .breakdown-row .val { font-family: var(--mono); color: var(--accent); }
+
+  .bar-container {
+    height: 6px;
+    background: var(--border);
+    border-radius: 3px;
+    margin-top: 0.3rem;
+    overflow: hidden;
+  }
+
+  .bar-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.4s ease;
+  }
+
+  .section-title {
+    font-size: 0.7rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    margin-bottom: 0.8rem;
+    font-family: var(--mono);
+  }
+
+  .gpu-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 0.6rem;
+  }
+
+  .gpu-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 0.7rem;
+    transition: border-color 0.2s;
+  }
+
+  .gpu-card.fits { border-color: #39ff1440; }
+  .gpu-card.tight { border-color: #ffd60040; }
+  .gpu-card.nope { border-color: #ff3d3d20; opacity: 0.5; }
+
+  .gpu-name {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 0.2rem;
+  }
+
+  .gpu-vram {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    color: var(--muted);
+    margin-bottom: 0.4rem;
+  }
+
+  .gpu-status {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+  }
+
+  .gpu-card.fits .gpu-status { color: var(--green); }
+  .gpu-card.tight .gpu-status { color: var(--yellow); }
+  .gpu-card.nope .gpu-status { color: var(--red); }
+
+  .reverse-panel { grid-column: 1 / -1; }
+
+  .mode-toggle {
+    display: flex;
+    gap: 0;
+    margin-bottom: 1.5rem;
+    grid-column: 1 / -1;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+    width: fit-content;
+  }
+
+  .mode-btn {
+    background: var(--surface2);
+    border: none;
+    color: var(--muted);
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    padding: 0.6rem 1.4rem;
+    cursor: pointer;
+    transition: all 0.15s;
+    text-transform: uppercase;
+  }
+
+  .mode-btn.active {
+    background: rgba(0,229,255,0.12);
+    color: var(--accent);
+  }
+
+  .reverse-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  @media (max-width: 600px) {
+    .reverse-grid { grid-template-columns: 1fr; }
+  }
+
+  .model-list {
+    margin-top: 0.8rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .model-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 0.5rem 0.8rem;
+    font-size: 0.8rem;
+  }
+
+  .model-item.can { border-left: 2px solid var(--green); }
+  .model-item.tight-fit { border-left: 2px solid var(--yellow); }
+  .model-item.cannot { border-left: 2px solid var(--red); opacity: 0.5; }
+
+  .model-quant-tag {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    color: var(--muted);
+    background: var(--border);
+    padding: 0.15rem 0.4rem;
+    border-radius: 2px;
+  }
+
+  footer {
+    text-align: center;
+    padding: 2rem;
+    font-size: 0.75rem;
+    color: var(--muted);
+    border-top: 1px solid var(--border);
+    font-family: var(--mono);
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    ██╗<br>
+    ██║<br>
+    ╚═╝
+  </div>
+  <div>
+    <h1>LLM <span>VRAM</span> Calculator</h1>
+    <div class="subtitle">Estimate GPU memory requirements for large language models</div>
+  </div>
+</header>
+
+<main id="app">
+  <div class="mode-toggle" style="grid-column:1/-1">
+    <button class="mode-btn active" onclick="setMode('forward')">▶ PARAMS → VRAM</button>
+    <button class="mode-btn" onclick="setMode('reverse')">◀ VRAM → MODELS</button>
+  </div>
+
+  <!-- FORWARD MODE -->
+  <div id="forward-mode" style="display:contents">
+
+    <div class="panel">
+      <div class="panel-title">Model Configuration</div>
+
+      <div class="field preset-select">
+        <label>Quick Preset</label>
+        <select id="preset" onchange="applyPreset()">
+          <option value="">— Custom —</option>
+          <optgroup label="Llama 3.x">
+            <option value="1,32,8">Llama 3.2 1B</option>
+            <option value="3,32,8">Llama 3.2 3B</option>
+            <option value="8,32,8">Llama 3.1 8B</option>
+            <option value="70,80,8">Llama 3.1 70B</option>
+            <option value="405,126,8">Llama 3.1 405B</option>
+          </optgroup>
+          <optgroup label="Mistral / Mixtral">
+            <option value="7,32,8">Mistral 7B</option>
+            <option value="22,40,8">Mistral Small 22B</option>
+            <option value="46.7,32,8">Mixtral 8x7B</option>
+          </optgroup>
+          <optgroup label="Qwen 2.5">
+            <option value="0.5,28,8">Qwen 2.5 0.5B</option>
+            <option value="1.5,28,8">Qwen 2.5 1.5B</option>
+            <option value="7,28,8">Qwen 2.5 7B</option>
+            <option value="14,40,8">Qwen 2.5 14B</option>
+            <option value="32,64,8">Qwen 2.5 32B</option>
+            <option value="72,80,8">Qwen 2.5 72B</option>
+          </optgroup>
+          <optgroup label="DeepSeek">
+            <option value="7,32,8">DeepSeek-V2 7B</option>
+            <option value="67,64,8">DeepSeek-V2 67B</option>
+          </optgroup>
+          <optgroup label="Phi">
+            <option value="3.8,32,8">Phi-3 Mini 3.8B</option>
+            <option value="14,40,8">Phi-3 Medium 14B</option>
+          </optgroup>
+          <optgroup label="Gemma 2">
+            <option value="2,26,8">Gemma 2 2B</option>
+            <option value="9,42,8">Gemma 2 9B</option>
+            <option value="27,46,8">Gemma 2 27B</option>
+          </optgroup>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Parameters (Billions)</label>
+        <input type="number" id="params" value="7" min="0.1" step="0.1" oninput="calculate()">
+      </div>
+
+      <div class="field">
+        <label>Context Length (tokens)</label>
+        <input type="number" id="ctx" value="4096" min="512" step="512" oninput="calculate()">
+      </div>
+
+      <div class="field">
+        <label>Num Layers (for KV cache)</label>
+        <input type="number" id="layers" value="32" min="1" step="1" oninput="calculate()">
+      </div>
+
+      <div class="field">
+        <label>Num KV Heads</label>
+        <input type="number" id="kvheads" value="8" min="1" step="1" oninput="calculate()">
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">Quantization</div>
+      <label style="margin-bottom:0.8rem">Precision / Format</label>
+      <div class="quant-grid" id="quant-btns">
+        <button class="quant-btn" onclick="setQuant('fp32')">FP32</button>
+        <button class="quant-btn" onclick="setQuant('fp16')">FP16</button>
+        <button class="quant-btn" onclick="setQuant('bf16')">BF16</button>
+        <button class="quant-btn" onclick="setQuant('q8')">Q8</button>
+        <button class="quant-btn active" onclick="setQuant('q6')">Q6</button>
+        <button class="quant-btn" onclick="setQuant('q5')">Q5</button>
+        <button class="quant-btn" onclick="setQuant('q4')">Q4</button>
+        <button class="quant-btn" onclick="setQuant('q3')">Q3</button>
+        <button class="quant-btn" onclick="setQuant('q2')">Q2</button>
+      </div>
+
+      <div class="breakdown" id="quant-info">
+        <div class="breakdown-row"><span>Bits per parameter</span><span class="val" id="bpp-val">—</span></div>
+        <div class="breakdown-row"><span>Bytes per parameter</span><span class="val" id="bypp-val">—</span></div>
+        <div class="breakdown-row"><span>Quality notes</span><span class="val" id="quant-note" style="font-size:0.7rem;color:var(--muted);text-align:right;max-width:55%">—</span></div>
+      </div>
+
+      <div class="field">
+        <label>Overhead % (activations, runtime)</label>
+        <input type="number" id="overhead" value="15" min="0" max="50" step="1" oninput="calculate()">
+      </div>
+    </div>
+
+    <div class="panel results-panel">
+      <div class="panel-title">Results</div>
+
+      <div class="result-main" id="result-stats">
+        <div class="stat-box">
+          <div class="stat-label">Weights VRAM</div>
+          <div class="stat-value" id="weights-vram">—</div>
+          <div class="stat-sub" id="weights-sub"></div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">KV Cache (per layer)</div>
+          <div class="stat-value" id="kv-vram">—</div>
+          <div class="stat-sub" id="kv-sub"></div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Total (w/ overhead)</div>
+          <div class="stat-value" id="total-vram">—</div>
+          <div class="stat-sub" id="total-sub"></div>
+        </div>
+      </div>
+
+      <div class="breakdown" style="margin-bottom:1rem">
+        <div class="section-title">Memory Breakdown</div>
+        <div id="breakdown-bars"></div>
+      </div>
+
+      <div class="section-title">GPU Compatibility</div>
+      <div class="gpu-grid" id="gpu-grid"></div>
+    </div>
+
+  </div>
+
+  <!-- REVERSE MODE -->
+  <div id="reverse-mode" style="display:none; grid-column:1/-1">
+    <div class="panel" style="grid-column:1/-1">
+      <div class="panel-title">Find Models That Fit Your VRAM</div>
+      <div class="reverse-grid">
+        <div>
+          <div class="field">
+            <label>Available VRAM (GB)</label>
+            <input type="number" id="rev-vram" value="16" min="1" step="1" oninput="reverseCalc()">
+          </div>
+          <div class="field">
+            <label>Preferred Quantization</label>
+            <select id="rev-quant" onchange="reverseCalc()">
+              <option value="fp32">FP32 (4 bytes/param)</option>
+              <option value="fp16">FP16 / BF16 (2 bytes/param)</option>
+              <option value="q8">Q8 (~1 byte/param)</option>
+              <option value="q6">Q6 (~0.75 bytes/param)</option>
+              <option value="q5">Q5 (~0.625 bytes/param)</option>
+              <option value="q4" selected>Q4 (~0.5 bytes/param)</option>
+              <option value="q3">Q3 (~0.375 bytes/param)</option>
+              <option value="q2">Q2 (~0.25 bytes/param)</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Overhead %</label>
+            <input type="number" id="rev-overhead" value="15" min="0" max="50" step="1" oninput="reverseCalc()">
+          </div>
+        </div>
+        <div>
+          <div class="stat-box" style="margin-bottom:1rem">
+            <div class="stat-label">Max Parameters Supported</div>
+            <div class="stat-value ok" id="rev-max-params">—</div>
+            <div class="stat-sub" id="rev-max-sub"></div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">Effective capacity after overhead</div>
+            <div class="stat-value" id="rev-effective">—</div>
+            <div class="stat-sub">GB available for weights</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:1.5rem">
+        <div class="section-title">Common Models — What You Can Run</div>
+        <div class="model-list" id="model-list"></div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  VRAM estimates are approximate. KV cache scales with context length and model architecture. Multi-GPU setups add PCIe transfer overhead.
+</footer>
+
+<script>
+const QUANTS = {
+  fp32: { bpp: 32, bypp: 4, note: 'Full precision, training-grade' },
+  fp16: { bpp: 16, bypp: 2, note: 'Half precision, good quality' },
+  bf16: { bpp: 16, bypp: 2, note: 'Better range than fp16' },
+  q8:   { bpp: 8,  bypp: 1, note: 'Near-lossless compression' },
+  q6:   { bpp: 6,  bypp: 0.75, note: 'Very good quality' },
+  q5:   { bpp: 5,  bypp: 0.625, note: 'Good quality / memory tradeoff' },
+  q4:   { bpp: 4,  bypp: 0.5, note: 'Recommended for most uses' },
+  q3:   { bpp: 3,  bypp: 0.375, note: 'Noticeable quality loss' },
+  q2:   { bpp: 2,  bypp: 0.25, note: 'Significant degradation' },
+};
+
+const GPUS = [
+  { name: 'RTX 3060',   vram: 12 },
+  { name: 'RTX 3070',   vram: 8 },
+  { name: 'RTX 3080',   vram: 10 },
+  { name: 'RTX 3090',   vram: 24 },
+  { name: 'RTX 4060',   vram: 8 },
+  { name: 'RTX 4070',   vram: 12 },
+  { name: 'RTX 4080',   vram: 16 },
+  { name: 'RTX 4090',   vram: 24 },
+  { name: '2× RTX 3070', vram: 16 },
+  { name: '2× RTX 3090', vram: 48 },
+  { name: 'A100 40GB',  vram: 40 },
+  { name: 'A100 80GB',  vram: 80 },
+  { name: 'H100',       vram: 80 },
+  { name: 'M2 Ultra 192GB', vram: 192 },
+];
+
+const MODELS = [
+  { name: 'Llama 3.2 1B',   params: 1 },
+  { name: 'Llama 3.2 3B',   params: 3 },
+  { name: 'Gemma 2 2B',     params: 2 },
+  { name: 'Phi-3 Mini 3.8B',params: 3.8 },
+  { name: 'Qwen 2.5 7B',    params: 7 },
+  { name: 'Llama 3.1 8B',   params: 8 },
+  { name: 'Mistral 7B',     params: 7 },
+  { name: 'Gemma 2 9B',     params: 9 },
+  { name: 'Qwen 2.5 14B',   params: 14 },
+  { name: 'Phi-3 Medium 14B', params: 14 },
+  { name: 'Mistral Small 22B', params: 22 },
+  { name: 'Gemma 2 27B',    params: 27 },
+  { name: 'Qwen 2.5 32B',   params: 32 },
+  { name: 'Mixtral 8x7B',   params: 46.7 },
+  { name: 'Llama 3.1 70B',  params: 70 },
+  { name: 'Qwen 2.5 72B',   params: 72 },
+  { name: 'Llama 3.1 405B', params: 405 },
+];
+
+let currentQuant = 'q6';
+let currentMode = 'forward';
+
+function setMode(mode) {
+  currentMode = mode;
+  document.querySelectorAll('.mode-btn').forEach((b, i) => {
+    b.classList.toggle('active', (i === 0 && mode === 'forward') || (i === 1 && mode === 'reverse'));
+  });
+  document.getElementById('forward-mode').style.display = mode === 'forward' ? 'contents' : 'none';
+  document.getElementById('reverse-mode').style.display = mode === 'reverse' ? 'block' : 'none';
+  if (mode === 'reverse') reverseCalc();
+}
+
+function setQuant(q) {
+  currentQuant = q;
+  document.querySelectorAll('.quant-btn').forEach(b => b.classList.remove('active'));
+  const btns = document.querySelectorAll('.quant-btn');
+  const order = ['fp32','fp16','bf16','q8','q6','q5','q4','q3','q2'];
+  const idx = order.indexOf(q);
+  if (idx >= 0) btns[idx].classList.add('active');
+  calculate();
+}
+
+function applyPreset() {
+  const val = document.getElementById('preset').value;
+  if (!val) return;
+  const [params, layers, kvheads] = val.split(',');
+  document.getElementById('params').value = params;
+  document.getElementById('layers').value = layers;
+  document.getElementById('kvheads').value = kvheads;
+  calculate();
+}
+
+function fmt(gb) {
+  if (gb < 1) return (gb * 1024).toFixed(0) + ' MB';
+  if (gb >= 100) return gb.toFixed(0) + ' GB';
+  return gb.toFixed(2) + ' GB';
+}
+
+function calculate() {
+  const params  = parseFloat(document.getElementById('params').value) || 7;
+  const ctx     = parseInt(document.getElementById('ctx').value) || 4096;
+  const layers  = parseInt(document.getElementById('layers').value) || 32;
+  const kvheads = parseInt(document.getElementById('kvheads').value) || 8;
+  const overhead = parseFloat(document.getElementById('overhead').value) / 100 || 0.15;
+  const q = QUANTS[currentQuant];
+
+  // Update quant info panel
+  document.getElementById('bpp-val').textContent = q.bpp + ' bits';
+  document.getElementById('bypp-val').textContent = q.bypp + ' bytes';
+  document.getElementById('quant-note').textContent = q.note;
+
+  // Weights
+  const weightsGB = params * 1e9 * q.bypp / 1e9;
+
+  // KV cache estimate: 2 (K+V) * layers * kvheads * head_dim * ctx * bytes
+  // head_dim rough estimate: 128 (common for most models)
+  const headDim = 128;
+  const kvBytes = 2 * layers * kvheads * headDim * ctx * q.bypp;
+  const kvGB = kvBytes / 1e9;
+
+  const subtotal = weightsGB + kvGB;
+  const totalGB = subtotal * (1 + overhead);
+
+  // Update stats
+  const weightsEl = document.getElementById('weights-vram');
+  weightsEl.textContent = fmt(weightsGB);
+  weightsEl.className = 'stat-value';
+
+  document.getElementById('weights-sub').textContent = `${params}B params × ${q.bypp} bytes`;
+
+  document.getElementById('kv-vram').textContent = fmt(kvGB);
+  document.getElementById('kv-sub').textContent = `${layers} layers, ${ctx.toLocaleString()} ctx`;
+
+  const totalEl = document.getElementById('total-vram');
+  totalEl.textContent = fmt(totalGB);
+  totalEl.className = 'stat-value ' + (totalGB > 24 ? 'danger' : totalGB > 12 ? 'warn' : 'ok');
+  document.getElementById('total-sub').textContent = `includes ${(overhead*100).toFixed(0)}% overhead`;
+
+  // Breakdown bars
+  const barsEl = document.getElementById('breakdown-bars');
+  const maxVal = totalGB;
+  const rows = [
+    { label: 'Model Weights', val: weightsGB, color: '#00e5ff' },
+    { label: 'KV Cache', val: kvGB, color: '#ff6b35' },
+    { label: 'Runtime Overhead', val: totalGB - subtotal, color: '#ffd600' },
+  ];
+  barsEl.innerHTML = rows.map(r => `
+    <div style="margin-bottom:0.6rem">
+      <div class="breakdown-row" style="border:none;padding:0.1rem 0">
+        <span>${r.label}</span>
+        <span class="val">${fmt(r.val)}</span>
+      </div>
+      <div class="bar-container">
+        <div class="bar-fill" style="width:${Math.min(100,(r.val/maxVal)*100).toFixed(1)}%;background:${r.color}"></div>
+      </div>
+    </div>
+  `).join('');
+
+  // GPU grid
+  const gpuEl = document.getElementById('gpu-grid');
+  gpuEl.innerHTML = GPUS.map(g => {
+    const fits   = g.vram >= totalGB;
+    const tight  = !fits && g.vram >= totalGB * 0.85;
+    const cls    = fits ? 'fits' : tight ? 'tight' : 'nope';
+    const status = fits ? '✓ FITS' : tight ? '~ TIGHT' : '✗ OOM';
+    return `
+      <div class="gpu-card ${cls}">
+        <div class="gpu-name">${g.name}</div>
+        <div class="gpu-vram">${g.vram} GB VRAM</div>
+        <div class="gpu-status">${status}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+function reverseCalc() {
+  const availGB  = parseFloat(document.getElementById('rev-vram').value) || 16;
+  const quantKey = document.getElementById('rev-quant').value;
+  const overhead = parseFloat(document.getElementById('rev-overhead').value) / 100 || 0.15;
+  const q = QUANTS[quantKey];
+
+  const effectiveGB = availGB / (1 + overhead);
+  const maxParams = effectiveGB * 1e9 / q.bypp / 1e9;
+
+  document.getElementById('rev-effective').textContent = fmt(effectiveGB);
+  document.getElementById('rev-max-params').textContent = maxParams.toFixed(1) + 'B';
+  document.getElementById('rev-max-sub').textContent = `params at ${quantKey.toUpperCase()}`;
+
+  const listEl = document.getElementById('model-list');
+  listEl.innerHTML = MODELS.map(m => {
+    const needed = m.params * 1e9 * q.bypp / 1e9 * (1 + overhead);
+    const fits   = needed <= availGB;
+    const tight  = !fits && needed <= availGB * 1.1;
+    const cls    = fits ? 'can' : tight ? 'tight-fit' : 'cannot';
+    return `
+      <div class="model-item ${cls}">
+        <span>${m.name}</span>
+        <div style="display:flex;gap:0.5rem;align-items:center">
+          <span class="model-quant-tag">${fmt(needed)}</span>
+          <span class="model-quant-tag">${quantKey.toUpperCase()}</span>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// Init
+calculate();
+reverseCalc();
+</script>
+</body>
+</html>
