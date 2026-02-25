@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>CTF Write-ups</title>
+  <style>
+    body { font-family: monospace; background: #0d1117; color: #c9d1d9; max-width: 800px; margin: 40px auto; padding: 20px; }
+    h1 { color: #58a6ff; }
+    .writeup-list { list-style: none; padding: 0; }
+    .writeup-list li { padding: 10px 0; border-bottom: 1px solid #21262d; }
+    .writeup-list a { color: #58a6ff; text-decoration: none; font-size: 1.1em; }
+    .writeup-list a:hover { text-decoration: underline; }
+    .meta { color: #8b949e; font-size: 0.85em; margin-top: 4px; }
+  </style>
+</head>
+<body>
+  <h1>CTF Write-ups</h1>
+  <ul class="writeup-list" id="list">Loading...</ul>
+
+  <script>
+    const REPO = 'AzureADTrent/azureadtrent.github.io';
+    const PATH = 'ctf-writeups';
+
+    fetch(`https://api.github.com/repos/${REPO}/contents/${PATH}`)
+      .then(r => r.json())
+      .then(files => {
+        const pdfs = files.filter(f => f.name.endsWith('.pdf'));
+        const list = document.getElementById('list');
+        if (!pdfs.length) { list.textContent = 'No write-ups yet.'; return; }
+
+        list.innerHTML = pdfs.map(f => {
+          // Turn filename like "HTB-MachineName-2025.pdf" into a readable title
+          const title = f.name.replace('.pdf','').replace(/[-_]/g,' ');
+          return `<li>
+            <a href="${f.download_url}" target="_blank">📄 ${title}</a>
+            <div class="meta">${(f.size/1024).toFixed(1)} KB · <a href="${f.download_url}" download style="color:#8b949e">Download</a></div>
+          </li>`;
+        }).join('');
+      })
+      .catch(() => document.getElementById('list').textContent = 'Failed to load write-ups.');
+  </script>
+</body>
+</html>
