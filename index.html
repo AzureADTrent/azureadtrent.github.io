@@ -198,11 +198,15 @@
             box-shadow: 0 0 10px var(--accent-glow);
         }
 
+        /* FIX: add margin-bottom to section so all sections have consistent spacing */
+        section {
+            margin-bottom: 80px;
+        }
+
         .grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 30px;
-            margin-bottom: 80px;
         }
 
         .card {
@@ -247,6 +251,14 @@
             color: var(--text-secondary);
             line-height: 1.6;
             margin-bottom: 20px;
+        }
+
+        /* FIX: add styling for card-icon images */
+        .card-icon {
+            width: 48px;
+            height: 48px;
+            object-fit: contain;
+            margin-bottom: 15px;
         }
 
         .card-link {
@@ -353,7 +365,8 @@
                 <a href="files/Resume.pdf" class="header-link">Resume</a>
                 <a href="blog/blog.html" class="header-link">Blog</a>
                 <a href="https://github.com/AzureADTrent/" class="header-link" target="_blank">GitHub</a>
-				<a href="llm-vram-calculator.html" class="header-link" target="_blank>LLM VRAM Calculator</a>
+                <!-- FIX: closing quote was missing on target="_blank" -->
+                <a href="llm-vram-calculator.html" class="header-link" target="_blank">LLM VRAM Calculator</a>
             </div>
         </header>
 
