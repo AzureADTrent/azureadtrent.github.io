@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Security Advisories | Trent Miller</title>
+    <meta name="description" content="CVEs and security advisories credited to Trent Miller.">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Archivo:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --terminal-green: #00ff41;
+            --bg-dark: #0a0e17;
+            --bg-secondary: #131820;
+            --text-primary: #e4e6eb;
+            --text-secondary: #8b92a8;
+            --accent: #00ff41;
+            --accent-glow: rgba(0, 255, 65, 0.3);
+            --card-bg: #1a1f2e;
+            --border: #2a3142;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Archivo', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            overflow-x: hidden;
+        }
+
+        a:focus-visible,
+        .advisory:focus-within {
+            outline: 2px solid var(--accent);
+            outline-offset: 3px;
+        }
+
+        /* Header */
+        header {
+            position: relative;
+            padding: 80px 20px 50px;
+            text-align: center;
+            background: linear-gradient(135deg, var(--bg-dark) 0%, var(--bg-secondary) 100%);
+            border-bottom: 1px solid var(--border);
+            overflow: hidden;
+        }
+
+        .header-glow {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+            pointer-events: none;
+            opacity: 0.3;
+        }
+
+        h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            position: relative;
+            letter-spacing: -0.02em;
+        }
+
+        .accent-text {
+            color: var(--accent);
+            text-shadow: 0 0 20px var(--accent-glow);
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            font-weight: 300;
+            margin-bottom: 28px;
+            position: relative;
+        }
+
+        .header-links {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+            position: relative;
+        }
+
+        .header-link {
+            padding: 12px 30px;
+            background: var(--card-bg);
+            color: var(--text-primary);
+            text-decoration: none;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .header-link:hover {
+            background: var(--accent);
+            color: var(--bg-dark);
+            border-color: var(--accent);
+            box-shadow: 0 0 20px var(--accent-glow);
+        }
+
+        /* Container */
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 60px 20px;
+        }
+
+        section {
+            margin-bottom: 70px;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 40px;
+            position: relative;
+            display: inline-block;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 60%;
+            height: 2px;
+            background: var(--accent);
+            box-shadow: 0 0 10px var(--accent-glow);
+        }
+
+        /* Tally */
+        .tally {
+            display: flex;
+            gap: 40px;
+            flex-wrap: wrap;
+            padding: 28px 32px;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            margin-bottom: 70px;
+        }
+
+        .tally-item .figure {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 2.4rem;
+            font-weight: 700;
+            color: var(--accent);
+            line-height: 1;
+        }
+
+        .tally-item .label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            margin-top: 10px;
+        }
+
+        /* Advisory record */
+        .advisory {
+            display: grid;
+            grid-template-columns: 220px 1fr;
+            gap: 30px;
+            padding: 28px 0;
+            border-top: 1px solid var(--border);
+            transition: border-color 0.3s ease;
+        }
+
+        .advisory:last-child {
+            border-bottom: 1px solid var(--border);
+        }
+
+        .advisory:hover {
+            border-top-color: var(--accent);
+        }
+
+        .advisory-id {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--accent);
+            letter-spacing: -0.01em;
+            word-break: break-all;
+        }
+
+        .advisory-id.unassigned {
+            color: var(--text-secondary);
+        }
+
+        .advisory-date {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-top: 8px;
+        }
+
+        .advisory h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+            line-height: 1.35;
+        }
+
+        .advisory p {
+            color: var(--text-secondary);
+            line-height: 1.65;
+            margin-bottom: 16px;
+        }
+
+        .meta {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            align-items: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.78rem;
+        }
+
+        .pill {
+            padding: 4px 10px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            color: var(--text-secondary);
+        }
+
+        .pill.live {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .advisory-link {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            transition: gap 0.3s ease;
+        }
+
+        .advisory-link:hover {
+            gap: 10px;
+        }
+
+        /* Note */
+        .note {
+            padding: 28px 32px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-left: 3px solid var(--accent);
+            border-radius: 8px;
+            line-height: 1.75;
+            color: var(--text-secondary);
+        }
+
+        .note h2 {
+            font-size: 1.1rem;
+            color: var(--text-primary);
+            margin-bottom: 14px;
+            font-weight: 600;
+        }
+
+        .note code {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85em;
+            color: var(--accent);
+            background: var(--bg-dark);
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border);
+            color: var(--text-secondary);
+        }
+
+        .updated {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            margin-top: 10px;
+            opacity: 0.7;
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 2.2rem; }
+            .subtitle { font-size: 1.05rem; }
+            .section-title { font-size: 1.6rem; }
+            .advisory {
+                grid-template-columns: 1fr;
+                gap: 14px;
+            }
+            .tally { gap: 28px; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            * { transition: none !important; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-glow"></div>
+        <h1>Security <span class="accent-text">Advisories</span></h1>
+        <p class="subtitle">CVEs and advisories credited to Trent Miller</p>
+        <div class="header-links">
+            <a href="/" class="header-link">Home</a>
+            <a href="/blog/blog.html" class="header-link">Blog</a>
+            <a href="https://github.com/AzureADTrent/" class="header-link">GitHub</a>
+        </div>
+    </header>
+
+    <div class="container">
+
+        <div class="tally">
+            <div class="tally-item">
+                <div class="figure">6</div>
+                <div class="label">Assigned CVEs</div>
+            </div>
+            <div class="tally-item">
+                <div class="figure">7</div>
+                <div class="label">Credited advisories</div>
+            </div>
+            <div class="tally-item">
+                <div class="figure">2</div>
+                <div class="label">Products</div>
+            </div>
+        </div>
+
+        <section>
+            <h2 class="section-title">Dokploy</h2>
+
+            <div class="advisory">
+                <div>
+                    <div class="advisory-id">CVE-2026-72863</div>
+                    <div class="advisory-date">2026-08-10</div>
+                </div>
+                <div>
+                    <h3>Missing authorization in WebSocket handlers</h3>
+                    <p>The Docker and terminal WebSocket handlers authenticated the session but never authorized it beyond an organization check. Any low-privilege member could open a root shell on the control-plane host or read the logs of any container.</p>
+                    <div class="meta">
+                        <span class="pill live">Published</span>
+                        <a class="advisory-link" href="https://github.com/Dokploy/dokploy/security/advisories/GHSA-7r6p-v9gw-pwc8">GHSA-7r6p-v9gw-pwc8 →</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="advisory">
+                <div>
+                    <div class="advisory-id">CVE-2026-72871</div>
+                    <div class="advisory-date">2026-08-10</div>
+                </div>
+                <div>
+                    <h3>Unauthenticated Git provider injection via GitHub OAuth callback</h3>
+                    <p>The OAuth callback accepted attacker-supplied provider data without authentication, allowing an unauthenticated attacker to inject a Git provider configuration.</p>
+                    <div class="meta">
+                        <span class="pill live">Published</span>
+                        <a class="advisory-link" href="https://github.com/Dokploy/dokploy/security/advisories/GHSA-g9pp-xcf2-ph7x">GHSA-g9pp-xcf2-ph7x →</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="advisory">
+                <div>
+                    <div class="advisory-id">CVE-2026-72883</div>
+                    <div class="advisory-date">2026-08-10</div>
+                </div>
+                <div>
+                    <h3>WebSocket terminal missing service-level access control</h3>
+                    <p>The terminal WebSocket endpoint checked organization membership but not access to the specific service, letting a member reach terminals for services outside their assignment.</p>
+                    <div class="meta">
+                        <span class="pill live">Published</span>
+                        <a class="advisory-link" href="https://github.com/Dokploy/dokploy/security/advisories/GHSA-qf9j-c9p4-r4xp">GHSA-qf9j-c9p4-r4xp →</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2 class="section-title">Kimai</h2>
+
+            <div class="advisory">
+                <div>
+                    <div class="advisory-id">CVE-2026-52824</div>
+                    <div class="advisory-date">2026-07-14</div>
+                </div>
+                <div>
+                    <h3>Default APP_SECRET in Docker image enables account takeover</h3>
+                    <p>The published Docker image shipped a fixed <code>APP_SECRET</code>. Any instance that kept the default allowed an unauthenticated attacker to forge signed tokens and take over an account, including administrators. Affects versions up to and including 2.57.0, fixed in 2.58.0.</p>
+                    <div class="meta">
+                        <span class="pill">Awaiting NVD</span>
+                        <a class="advisory-link" href="https://github.com/advisories/GHSA-jr9p-4h4j-6c58">GHSA-jr9p-4h4j-6c58 →</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="advisory">
+                <div>
+                    <div class="advisory-id">CVE-2026-52828</div>
+                    <div class="advisory-date">2026-07-14</div>
+                </div>
+                <div>
+                    <h3>ExportTemplate CRUD missing authorization check</h3>
+                    <p>Export template create, read, update, and delete operations skipped the role check, letting a team lead act on templates outside their permission set.</p>
+                    <div class="meta">
+                        <span class="pill">Awaiting NVD</span>
+                        <a class="advisory-link" href="https://github.com/advisories/GHSA-rw46-qg69-vg6h">GHSA-rw46-qg69-vg6h →</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="advisory">
+                <div>
+                    <div class="advisory-id">CVE-2026-41498</div>
+                    <div class="advisory-date">2026-05-08</div>
+                </div>
+                <div>
+                    <h3>Missing object-level authorization in the Team API</h3>
+                    <p>Team API endpoints accepted arbitrary object IDs without verifying that the caller had access to the referenced team.</p>
+                    <div class="meta">
+                        <span class="pill live">In NVD</span>
+                        <a class="advisory-link" href="https://github.com/advisories/GHSA-jv9x-w4gm-hwcm">GHSA-jv9x-w4gm-hwcm →</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="advisory">
+                <div>
+                    <div class="advisory-id unassigned">No CVE</div>
+                </div>
+                <div>
+                    <h3>Password reset link remains valid after password change</h3>
+                    <p>Reset tokens were not invalidated once the password changed, leaving an old link usable to reset the account again.</p>
+                    <div class="meta">
+                        <span class="pill">GHSA only</span>
+                        <a class="advisory-link" href="https://github.com/advisories/GHSA-m492-gv72-xvxj">GHSA-m492-gv72-xvxj →</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <div class="note">
+                <h2>Why the Dokploy links look different</h2>
+                <p>Kimai ships as a Packagist package, so its advisories are promoted into the global GitHub Advisory Database and appear under <code>github.com/advisories</code>. Dokploy is not published to a supported package ecosystem, so its advisories stay scoped to the repository. They carry a real CVE ID assigned by GitHub as CNA, but they never enter the global database and do not surface in a <code>credit:</code> query. The links above point at the repository advisories, which are the primary record.</p>
+            </div>
+        </section>
+
+    </div>
+
+    <footer>
+        <div>&copy; 2026 Trent Miller. All rights reserved.</div>
+        <div class="updated">Last verified 2026-08-24 against GitHub Advisory Database, MITRE CVE Services, and NVD</div>
+    </footer>
+</body>
+</html>
