@@ -270,7 +270,8 @@
             font-weight: 600;
         }
 
-        .note code {
+        .note code,
+        .advisory code {
             font-family: 'JetBrains Mono', monospace;
             font-size: 0.85em;
             color: var(--accent);
@@ -330,14 +331,93 @@
                 <div class="label">Assigned CVEs</div>
             </div>
             <div class="tally-item">
-                <div class="figure">7</div>
+                <div class="figure">12</div>
                 <div class="label">Credited advisories</div>
             </div>
             <div class="tally-item">
-                <div class="figure">2</div>
+                <div class="figure">3</div>
                 <div class="label">Products</div>
             </div>
         </div>
+
+        <section>
+            <h2 class="section-title">Plane</h2>
+
+            <div class="advisory">
+                <div>
+                    <div class="advisory-id unassigned">No CVE</div>
+                    <div class="advisory-date">2026-09-28</div>
+                </div>
+                <div>
+                    <h3>Disabled user auto-reactivation on login</h3>
+                    <p>The login flow ignored the <code>is_active</code> flag and set it back to <code>true</code> on successful authentication. A deactivated user, or an attacker holding their credentials, could log in and silently restore the account. Affects versions up to and including 1.3.1, fixed in 1.4.0.</p>
+                    <div class="meta">
+                        <span class="pill">GHSA only</span>
+                        <a class="advisory-link" href="https://github.com/makeplane/plane/security/advisories/GHSA-rmmf-rj2q-3rrg">GHSA-rmmf-rj2q-3rrg →</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="advisory">
+                <div>
+                    <div class="advisory-id unassigned">No CVE</div>
+                    <div class="advisory-date">2026-09-28</div>
+                </div>
+                <div>
+                    <h3>Cross-tenant sub-issue reparenting via IDOR</h3>
+                    <p>The sub-issues endpoint validated only the project in the URL path, not the issue UUIDs in the request body. Any authenticated user could reparent issues belonging to any other workspace on the instance.</p>
+                    <div class="meta">
+                        <span class="pill">GHSA only</span>
+                        <a class="advisory-link" href="https://github.com/makeplane/plane/security/advisories/GHSA-38vj-gf85-7q5x">GHSA-38vj-gf85-7q5x →</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="advisory">
+                <div>
+                    <div class="advisory-id unassigned">No CVE</div>
+                    <div class="advisory-date">2026-09-28</div>
+                </div>
+                <div>
+                    <h3>Cross-tenant cycle issue hijack via IDOR</h3>
+                    <p>The cycle-issues endpoint accepted issue UUIDs from any workspace. Adding a victim's issue to an attacker-owned cycle removed it from the victim's own cycle, a destructive cross-tenant write.</p>
+                    <div class="meta">
+                        <span class="pill">GHSA only</span>
+                        <a class="advisory-link" href="https://github.com/makeplane/plane/security/advisories/GHSA-22g9-9xfv-q3fr">GHSA-22g9-9xfv-q3fr →</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="advisory">
+                <div>
+                    <div class="advisory-id unassigned">No CVE</div>
+                    <div class="advisory-date">2026-09-28</div>
+                </div>
+                <div>
+                    <h3>Cross-tenant issue relation creation via IDOR</h3>
+                    <p>The issue-relation endpoint accepted issue UUIDs without a workspace check. Any authenticated user could relate their issues to private issues in other workspaces, leaking metadata through the response, activity logs, and webhooks.</p>
+                    <div class="meta">
+                        <span class="pill">GHSA only</span>
+                        <a class="advisory-link" href="https://github.com/makeplane/plane/security/advisories/GHSA-8cvv-8jh5-g6mj">GHSA-8cvv-8jh5-g6mj →</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="advisory">
+                <div>
+                    <div class="advisory-id unassigned">No CVE</div>
+                    <div class="advisory-date">2026-09-28</div>
+                </div>
+                <div>
+                    <h3>Cross-tenant module issue linking via IDOR</h3>
+                    <p>The modules endpoint never validated the issue UUID in the URL path against the caller's workspace. Any authenticated user could link issues from any workspace to their own modules.</p>
+                    <div class="meta">
+                        <span class="pill">GHSA only</span>
+                        <a class="advisory-link" href="https://github.com/makeplane/plane/security/advisories/GHSA-x5c5-hmvm-94v9">GHSA-x5c5-hmvm-94v9 →</a>
+                    </div>
+                </div>
+            </div>
+        </section>
 
         <section>
             <h2 class="section-title">Dokploy</h2>
@@ -453,8 +533,8 @@
 
         <section>
             <div class="note">
-                <h2>Why the Dokploy links look different</h2>
-                <p>Kimai ships as a Packagist package, so its advisories are promoted into the global GitHub Advisory Database and appear under <code>github.com/advisories</code>. Dokploy is not published to a supported package ecosystem, so its advisories stay scoped to the repository. They carry a real CVE ID assigned by GitHub as CNA, but they never enter the global database and do not surface in a <code>credit:</code> query. The links above point at the repository advisories, which are the primary record.</p>
+                <h2>Why the Dokploy and Plane links look different</h2>
+                <p>Kimai ships as a Packagist package, so its advisories are promoted into the global GitHub Advisory Database and appear under <code>github.com/advisories</code>. Dokploy and Plane are not published to a supported package ecosystem, so their advisories stay scoped to the repository. They never enter the global database and do not surface in a <code>credit:</code> query. The Dokploy advisories still carry real CVE IDs assigned by GitHub as CNA. The links above point at the repository advisories, which are the primary record.</p>
             </div>
         </section>
 
@@ -462,7 +542,7 @@
 
     <footer>
         <div>&copy; 2026 Trent Miller. All rights reserved.</div>
-        <div class="updated">Last verified 2026-08-24 against GitHub Advisory Database, MITRE CVE Services, and NVD</div>
+        <div class="updated">Last verified 2026-09-28 against GitHub Advisory Database, MITRE CVE Services, and NVD</div>
     </footer>
 </body>
 </html>
