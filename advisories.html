@@ -348,11 +348,11 @@
 
         <div class="tally">
             <div class="tally-item">
-                <div class="figure">10</div>
+                <div class="figure">12</div>
                 <div class="label">Assigned CVEs</div>
             </div>
             <div class="tally-item">
-                <div class="figure">12</div>
+                <div class="figure">17</div>
                 <div class="label">Credited advisories</div>
             </div>
             <div class="tally-item">
@@ -450,6 +450,54 @@
 
             <div class="advisory">
                 <div>
+                    <div class="advisory-id unassigned">No CVE</div>
+                    <div class="advisory-date">2026-11-12</div>
+                </div>
+                <div>
+                    <h3>SSH private key disclosure via server.all and server.one</h3>
+                    <p>The server endpoints only checked for a valid organization session. Any member, with no server or SSH access granted, could list every server and read its SSH private key in plaintext. Affects versions before 0.29.13, fixed in 0.29.13.</p>
+                    <div class="meta">
+                        <span class="sev critical" title="CVSS 3.1 base score 9.9">critical<span class="score">9.9</span></span>
+                        <span class="pill">GHSA only</span>
+                        <a class="advisory-link" href="https://github.com/Dokploy/dokploy/security/advisories/GHSA-w9cp-jqfw-4xj9">GHSA-w9cp-jqfw-4xj9 →</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="advisory">
+                <div>
+                    <div class="advisory-id unassigned">No CVE</div>
+                    <div class="advisory-date">2026-11-12</div>
+                </div>
+                <div>
+                    <h3>Command injection via shell string interpolation</h3>
+                    <p>Several procedures, including database password changes and backup restore, interpolated user input into <code>bash</code> command strings without escaping. A member with service access could run arbitrary commands on the host, typically as root. Affects versions before 0.31.1, fixed in 0.31.1.</p>
+                    <div class="meta">
+                        <span class="sev high" title="CVSS 3.1 base score 8.8">high<span class="score">8.8</span></span>
+                        <span class="pill">GHSA only</span>
+                        <a class="advisory-link" href="https://github.com/Dokploy/dokploy/security/advisories/GHSA-gx7w-xwfw-w342">GHSA-gx7w-xwfw-w342 →</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="advisory">
+                <div>
+                    <div class="advisory-id unassigned">No CVE</div>
+                    <div class="advisory-date">2026-11-12</div>
+                </div>
+                <div>
+                    <h3>Server-side request forgery in AI and monitoring endpoints</h3>
+                    <p>The AI provider and metrics endpoints fetched caller-supplied URLs with no scheme, host, or IP validation. Any member could probe internal services and cloud metadata endpoints from the Dokploy server. Affects versions before 0.31.1, fixed in 0.31.1. Shared credit with other reporters.</p>
+                    <div class="meta">
+                        <span class="sev high" title="CVSS 3.1 base score 7.7">high<span class="score">7.7</span></span>
+                        <span class="pill">GHSA only</span>
+                        <a class="advisory-link" href="https://github.com/Dokploy/dokploy/security/advisories/GHSA-cwhp-w8c5-2vjw">GHSA-cwhp-w8c5-2vjw →</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="advisory">
+                <div>
                     <div class="advisory-id">CVE-2026-72863</div>
                     <div class="advisory-date">2026-08-10</div>
                 </div>
@@ -492,6 +540,38 @@
                         <span class="sev high" title="CVSS 3.1 base score 8.8">high<span class="score">8.8</span></span>
                         <span class="pill live">Published</span>
                         <a class="advisory-link" href="https://github.com/Dokploy/dokploy/security/advisories/GHSA-qf9j-c9p4-r4xp">GHSA-qf9j-c9p4-r4xp →</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="advisory">
+                <div>
+                    <div class="advisory-id">CVE-2026-45790</div>
+                    <div class="advisory-date">2026-08-17</div>
+                </div>
+                <div>
+                    <h3>Invitation role escalation allows organization takeover</h3>
+                    <p>The invite endpoint let anyone with <code>member:create</code> permission invite a new account with the <code>owner</code> role. Owners cannot be demoted, so accepting the invitation meant a permanent organization takeover. Affects versions before 0.29.4.</p>
+                    <div class="meta">
+                        <span class="sev high" title="CVSS 3.1 base score 8.0">high<span class="score">8.0</span></span>
+                        <span class="pill live">Published</span>
+                        <a class="advisory-link" href="https://github.com/Dokploy/dokploy/security/advisories/GHSA-fm9p-wmpw-gxjh">GHSA-fm9p-wmpw-gxjh →</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="advisory">
+                <div>
+                    <div class="advisory-id">CVE-2026-45791</div>
+                    <div class="advisory-date">2026-08-17</div>
+                </div>
+                <div>
+                    <h3>Password change does not revoke active sessions</h3>
+                    <p>Changing a password left existing sessions valid for up to three days, so an attacker holding a stolen session token kept access after the user rotated their credentials. Affects versions before 0.29.4.</p>
+                    <div class="meta">
+                        <span class="sev medium" title="CVSS 3.1 base score 5.9">medium<span class="score">5.9</span></span>
+                        <span class="pill live">Published</span>
+                        <a class="advisory-link" href="https://github.com/Dokploy/dokploy/security/advisories/GHSA-rr9m-w87g-46f3">GHSA-rr9m-w87g-46f3 →</a>
                     </div>
                 </div>
             </div>
