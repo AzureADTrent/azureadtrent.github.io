@@ -238,6 +238,27 @@
             color: var(--accent);
         }
 
+        /* Severity badge: GitHub advisory rating + CVSS base score */
+        .sev {
+            padding: 4px 10px;
+            border: 1px solid currentColor;
+            border-radius: 4px;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
+
+        .sev .score {
+            font-weight: 400;
+            opacity: 0.85;
+            margin-left: 4px;
+        }
+
+        .sev.critical { color: #ff4d6d; background: rgba(255, 77, 109, 0.1); }
+        .sev.high     { color: #ff8c42; background: rgba(255, 140, 66, 0.1); }
+        .sev.medium   { color: #ffd23f; background: rgba(255, 210, 63, 0.08); }
+        .sev.low      { color: #6cb4ff; background: rgba(108, 180, 255, 0.08); }
+
         .advisory-link {
             color: var(--accent);
             text-decoration: none;
@@ -352,6 +373,7 @@
                     <h3>Disabled user auto-reactivation on login</h3>
                     <p>The login flow ignored the <code>is_active</code> flag and set it back to <code>true</code> on successful authentication. A deactivated user, or an attacker holding their credentials, could log in and silently restore the account. Affects versions up to and including 1.3.1, fixed in 1.4.0.</p>
                     <div class="meta">
+                        <span class="sev high" title="CVSS 3.1 base score 8.1">high<span class="score">8.1</span></span>
                         <span class="pill live">Published</span>
                         <a class="advisory-link" href="https://github.com/makeplane/plane/security/advisories/GHSA-rmmf-rj2q-3rrg">GHSA-rmmf-rj2q-3rrg →</a>
                     </div>
@@ -367,6 +389,7 @@
                     <h3>Cross-tenant sub-issue reparenting via IDOR</h3>
                     <p>The sub-issues endpoint validated only the project in the URL path, not the issue UUIDs in the request body. Any authenticated user could reparent issues belonging to any other workspace on the instance.</p>
                     <div class="meta">
+                        <span class="sev medium" title="CVSS 3.1 base score 6.5">medium<span class="score">6.5</span></span>
                         <span class="pill">GHSA only</span>
                         <a class="advisory-link" href="https://github.com/makeplane/plane/security/advisories/GHSA-38vj-gf85-7q5x">GHSA-38vj-gf85-7q5x →</a>
                     </div>
@@ -382,6 +405,7 @@
                     <h3>Cross-tenant cycle issue hijack via IDOR</h3>
                     <p>The cycle-issues endpoint accepted issue UUIDs from any workspace. Adding a victim's issue to an attacker-owned cycle removed it from the victim's own cycle, a destructive cross-tenant write.</p>
                     <div class="meta">
+                        <span class="sev medium" title="CVSS 3.1 base score 6.5">medium<span class="score">6.5</span></span>
                         <span class="pill live">Published</span>
                         <a class="advisory-link" href="https://github.com/makeplane/plane/security/advisories/GHSA-22g9-9xfv-q3fr">GHSA-22g9-9xfv-q3fr →</a>
                     </div>
@@ -397,6 +421,7 @@
                     <h3>Cross-tenant issue relation creation via IDOR</h3>
                     <p>The issue-relation endpoint accepted issue UUIDs without a workspace check. Any authenticated user could relate their issues to private issues in other workspaces, leaking metadata through the response, activity logs, and webhooks.</p>
                     <div class="meta">
+                        <span class="sev medium" title="CVSS 3.1 base score 5.4">medium<span class="score">5.4</span></span>
                         <span class="pill live">Published</span>
                         <a class="advisory-link" href="https://github.com/makeplane/plane/security/advisories/GHSA-8cvv-8jh5-g6mj">GHSA-8cvv-8jh5-g6mj →</a>
                     </div>
@@ -412,6 +437,7 @@
                     <h3>Cross-tenant module issue linking via IDOR</h3>
                     <p>The modules endpoint never validated the issue UUID in the URL path against the caller's workspace. Any authenticated user could link issues from any workspace to their own modules.</p>
                     <div class="meta">
+                        <span class="sev medium" title="CVSS 3.1 base score 4.3">medium<span class="score">4.3</span></span>
                         <span class="pill live">Published</span>
                         <a class="advisory-link" href="https://github.com/makeplane/plane/security/advisories/GHSA-x5c5-hmvm-94v9">GHSA-x5c5-hmvm-94v9 →</a>
                     </div>
@@ -431,6 +457,7 @@
                     <h3>Missing authorization in WebSocket handlers</h3>
                     <p>The Docker and terminal WebSocket handlers authenticated the session but never authorized it beyond an organization check. Any low-privilege member could open a root shell on the control-plane host or read the logs of any container.</p>
                     <div class="meta">
+                        <span class="sev critical" title="CVSS 3.1 base score 9.9">critical<span class="score">9.9</span></span>
                         <span class="pill live">Published</span>
                         <a class="advisory-link" href="https://github.com/Dokploy/dokploy/security/advisories/GHSA-7r6p-v9gw-pwc8">GHSA-7r6p-v9gw-pwc8 →</a>
                     </div>
@@ -446,6 +473,7 @@
                     <h3>Unauthenticated Git provider injection via GitHub OAuth callback</h3>
                     <p>The OAuth callback accepted attacker-supplied provider data without authentication, allowing an unauthenticated attacker to inject a Git provider configuration.</p>
                     <div class="meta">
+                        <span class="sev high" title="CVSS 3.1 base score 7.5">high<span class="score">7.5</span></span>
                         <span class="pill live">Published</span>
                         <a class="advisory-link" href="https://github.com/Dokploy/dokploy/security/advisories/GHSA-g9pp-xcf2-ph7x">GHSA-g9pp-xcf2-ph7x →</a>
                     </div>
@@ -461,6 +489,7 @@
                     <h3>WebSocket terminal missing service-level access control</h3>
                     <p>The terminal WebSocket endpoint checked organization membership but not access to the specific service, letting a member reach terminals for services outside their assignment.</p>
                     <div class="meta">
+                        <span class="sev high" title="CVSS 3.1 base score 8.8">high<span class="score">8.8</span></span>
                         <span class="pill live">Published</span>
                         <a class="advisory-link" href="https://github.com/Dokploy/dokploy/security/advisories/GHSA-qf9j-c9p4-r4xp">GHSA-qf9j-c9p4-r4xp →</a>
                     </div>
@@ -480,6 +509,7 @@
                     <h3>Default APP_SECRET in Docker image enables account takeover</h3>
                     <p>The published Docker image shipped a fixed <code>APP_SECRET</code>. Any instance that kept the default allowed an unauthenticated attacker to forge signed tokens and take over an account, including administrators. Affects versions up to and including 2.57.0, fixed in 2.58.0.</p>
                     <div class="meta">
+                        <span class="sev critical" title="CVSS 4.0 base score 9.1">critical<span class="score">9.1 v4</span></span>
                         <span class="pill">Awaiting NVD</span>
                         <a class="advisory-link" href="https://github.com/advisories/GHSA-jr9p-4h4j-6c58">GHSA-jr9p-4h4j-6c58 →</a>
                     </div>
@@ -495,6 +525,7 @@
                     <h3>ExportTemplate CRUD missing authorization check</h3>
                     <p>Export template create, read, update, and delete operations skipped the role check, letting a team lead act on templates outside their permission set.</p>
                     <div class="meta">
+                        <span class="sev medium" title="CVSS 4.0 base score 5.3">medium<span class="score">5.3 v4</span></span>
                         <span class="pill">Awaiting NVD</span>
                         <a class="advisory-link" href="https://github.com/advisories/GHSA-rw46-qg69-vg6h">GHSA-rw46-qg69-vg6h →</a>
                     </div>
@@ -510,6 +541,7 @@
                     <h3>Missing object-level authorization in the Team API</h3>
                     <p>Team API endpoints accepted arbitrary object IDs without verifying that the caller had access to the referenced team.</p>
                     <div class="meta">
+                        <span class="sev low" title="CVSS 3.1 base score 3.3">low<span class="score">3.3</span></span>
                         <span class="pill live">In NVD</span>
                         <a class="advisory-link" href="https://github.com/advisories/GHSA-jv9x-w4gm-hwcm">GHSA-jv9x-w4gm-hwcm →</a>
                     </div>
@@ -524,6 +556,7 @@
                     <h3>Password reset link remains valid after password change</h3>
                     <p>Reset tokens were not invalidated once the password changed, leaving an old link usable to reset the account again.</p>
                     <div class="meta">
+                        <span class="sev low" title="CVSS 4.0 base score 1.2">low<span class="score">1.2 v4</span></span>
                         <span class="pill">GHSA only</span>
                         <a class="advisory-link" href="https://github.com/advisories/GHSA-m492-gv72-xvxj">GHSA-m492-gv72-xvxj →</a>
                     </div>
