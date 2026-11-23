@@ -499,7 +499,7 @@
             <div class="advisory">
                 <div>
                     <div class="advisory-id">CVE-2026-72863</div>
-                    <div class="advisory-date">2026-08-10</div>
+                    <div class="advisory-date">2026-07-21</div>
                 </div>
                 <div>
                     <h3>Missing authorization in WebSocket handlers</h3>
@@ -515,7 +515,7 @@
             <div class="advisory">
                 <div>
                     <div class="advisory-id">CVE-2026-72871</div>
-                    <div class="advisory-date">2026-08-10</div>
+                    <div class="advisory-date">2026-07-21</div>
                 </div>
                 <div>
                     <h3>Unauthenticated Git provider injection via GitHub OAuth callback</h3>
@@ -531,7 +531,7 @@
             <div class="advisory">
                 <div>
                     <div class="advisory-id">CVE-2026-72883</div>
-                    <div class="advisory-date">2026-08-10</div>
+                    <div class="advisory-date">2026-07-21</div>
                 </div>
                 <div>
                     <h3>WebSocket terminal missing service-level access control</h3>
@@ -547,7 +547,7 @@
             <div class="advisory">
                 <div>
                     <div class="advisory-id">CVE-2026-45790</div>
-                    <div class="advisory-date">2026-08-17</div>
+                    <div class="advisory-date">2026-07-21</div>
                 </div>
                 <div>
                     <h3>Invitation role escalation allows organization takeover</h3>
@@ -563,7 +563,7 @@
             <div class="advisory">
                 <div>
                     <div class="advisory-id">CVE-2026-45791</div>
-                    <div class="advisory-date">2026-08-17</div>
+                    <div class="advisory-date">2026-07-21</div>
                 </div>
                 <div>
                     <h3>Password change does not revoke active sessions</h3>
@@ -583,14 +583,14 @@
             <div class="advisory">
                 <div>
                     <div class="advisory-id">CVE-2026-52824</div>
-                    <div class="advisory-date">2026-07-14</div>
+                    <div class="advisory-date">2026-06-11</div>
                 </div>
                 <div>
                     <h3>Default APP_SECRET in Docker image enables account takeover</h3>
                     <p>The published Docker image shipped a fixed <code>APP_SECRET</code>. Any instance that kept the default allowed an unauthenticated attacker to forge signed tokens and take over an account, including administrators. Affects versions up to and including 2.57.0, fixed in 2.58.0.</p>
                     <div class="meta">
                         <span class="sev critical" title="CVSS 4.0 base score 9.1">critical<span class="score">9.1 v4</span></span>
-                        <span class="pill">Awaiting NVD</span>
+                        <span class="pill live">Published</span>
                         <a class="advisory-link" href="https://github.com/advisories/GHSA-jr9p-4h4j-6c58">GHSA-jr9p-4h4j-6c58 →</a>
                     </div>
                 </div>
@@ -599,14 +599,14 @@
             <div class="advisory">
                 <div>
                     <div class="advisory-id">CVE-2026-52828</div>
-                    <div class="advisory-date">2026-07-14</div>
+                    <div class="advisory-date">2026-06-11</div>
                 </div>
                 <div>
                     <h3>ExportTemplate CRUD missing authorization check</h3>
                     <p>Export template create, read, update, and delete operations skipped the role check, letting a team lead act on templates outside their permission set.</p>
                     <div class="meta">
                         <span class="sev medium" title="CVSS 4.0 base score 5.3">medium<span class="score">5.3 v4</span></span>
-                        <span class="pill">Awaiting NVD</span>
+                        <span class="pill live">Published</span>
                         <a class="advisory-link" href="https://github.com/advisories/GHSA-rw46-qg69-vg6h">GHSA-rw46-qg69-vg6h →</a>
                     </div>
                 </div>
@@ -614,23 +614,8 @@
 
             <div class="advisory">
                 <div>
-                    <div class="advisory-id">CVE-2026-41498</div>
-                    <div class="advisory-date">2026-05-08</div>
-                </div>
-                <div>
-                    <h3>Missing object-level authorization in the Team API</h3>
-                    <p>Team API endpoints accepted arbitrary object IDs without verifying that the caller had access to the referenced team.</p>
-                    <div class="meta">
-                        <span class="sev low" title="CVSS 3.1 base score 3.3">low<span class="score">3.3</span></span>
-                        <span class="pill live">In NVD</span>
-                        <a class="advisory-link" href="https://github.com/advisories/GHSA-jv9x-w4gm-hwcm">GHSA-jv9x-w4gm-hwcm →</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="advisory">
-                <div>
                     <div class="advisory-id unassigned">No CVE</div>
+                    <div class="advisory-date">2026-05-27</div>
                 </div>
                 <div>
                     <h3>Password reset link remains valid after password change</h3>
@@ -642,13 +627,29 @@
                     </div>
                 </div>
             </div>
+
+            <div class="advisory">
+                <div>
+                    <div class="advisory-id">CVE-2026-41498</div>
+                    <div class="advisory-date">2026-04-21</div>
+                </div>
+                <div>
+                    <h3>Missing object-level authorization in the Team API</h3>
+                    <p>Team API endpoints accepted arbitrary object IDs without verifying that the caller had access to the referenced team.</p>
+                    <div class="meta">
+                        <span class="sev low" title="CVSS 3.1 base score 3.3">low<span class="score">3.3</span></span>
+                        <span class="pill live">Published</span>
+                        <a class="advisory-link" href="https://github.com/advisories/GHSA-jv9x-w4gm-hwcm">GHSA-jv9x-w4gm-hwcm →</a>
+                    </div>
+                </div>
+            </div>
         </section>
 
     </div>
 
     <footer>
         <div>&copy; 2026 Trent Miller. All rights reserved.</div>
-        <div class="updated">Last verified 2026-10-05 against GitHub Advisory Database, MITRE CVE Services, and NVD</div>
+        <div class="updated">Last verified 2026-11-23 against GitHub Advisory Database, MITRE CVE Services, and NVD</div>
     </footer>
 </body>
 </html>
