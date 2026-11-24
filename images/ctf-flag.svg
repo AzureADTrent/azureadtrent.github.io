@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <!-- Capture-the-flag icon for the CTF Walkthroughs card; flat two-tone style to match the other card icons -->
+  <!-- base -->
+  <path d="M18 118 h44 a4 4 0 0 0 -4 -10 h-36 a4 4 0 0 0 -4 10 Z" fill="#0f3d82"/>
+  <!-- pole -->
+  <rect x="34" y="10" width="8" height="100" rx="4" fill="#1976d2"/>
+  <rect x="38" y="10" width="4" height="100" rx="2" fill="#0f3d82"/>
+  <circle cx="38" cy="10" r="7" fill="#2bb6ff"/>
+  <!-- cloth: lighter top half, darker bottom half -->
+  <path d="M42 20 C62 12 78 28 112 18 L112 46 C82 54 66 40 42 48 Z" fill="#2bb6ff"/>
+  <path d="M42 48 C66 40 82 54 112 46 L112 72 C78 82 62 66 42 74 Z" fill="#1e88e5"/>
+  <!-- emblem -->
+  <path d="M66 36 l8 8 l14 -16" fill="none" stroke="#ffffff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

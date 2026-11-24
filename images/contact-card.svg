@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <!-- Contact card icon for the LinkedIn card; flat two-tone style to match the other card icons -->
+  <!-- card: lighter left half, darker right half -->
+  <rect x="8" y="24" width="112" height="80" rx="10" fill="#1e88e5"/>
+  <path d="M18 24 h46 v80 h-46 a10 10 0 0 1 -10 -10 v-60 a10 10 0 0 1 10 -10 Z" fill="#2bb6ff"/>
+  <!-- header strip -->
+  <path d="M18 24 h92 a10 10 0 0 1 10 10 v4 h-112 v-4 a10 10 0 0 1 10 -10 Z" fill="#0f3d82"/>
+  <!-- portrait -->
+  <circle cx="40" cy="62" r="11" fill="#ffffff"/>
+  <path d="M20 94 a20 18 0 0 1 40 0 Z" fill="#ffffff"/>
+  <!-- details -->
+  <rect x="72" y="54" width="36" height="7" rx="3.5" fill="#e3f2fd"/>
+  <rect x="72" y="68" width="28" height="7" rx="3.5" fill="#e3f2fd"/>
+  <rect x="72" y="82" width="32" height="7" rx="3.5" fill="#e3f2fd"/>
+</svg>

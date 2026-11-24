@@ -4,6 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Trent Miller | Penetration Tester</title>
+    <meta name="description" content="Trent Miller, penetration tester and security consultant. Security advisories, CTF write-ups, certifications, and blog.">
+    <script>
+        // Play the terminal intro once per browser session, and never for
+        // visitors who prefer reduced motion. Without JavaScript the page
+        // simply shows its content.
+        try {
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches &&
+                !sessionStorage.getItem('introSeen')) {
+                document.documentElement.classList.add('intro');
+                sessionStorage.setItem('introSeen', '1');
+            }
+        } catch (e) { /* storage blocked: skip the intro */ }
+    </script>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Archivo:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -31,8 +44,13 @@
             overflow-x: hidden;
         }
 
-        /* Terminal Intro */
+        /* Terminal Intro: only shown when the head script adds .intro
+           (first visit this session, motion allowed, JavaScript on) */
         #terminal-intro {
+            display: none;
+        }
+
+        html.intro #terminal-intro {
             position: fixed;
             top: 0;
             left: 0;
@@ -47,9 +65,10 @@
             color: var(--terminal-green);
             opacity: 1;
             transition: opacity 0.5s ease;
+            cursor: pointer;
         }
 
-        #terminal-intro.fade-out {
+        html.intro #terminal-intro.fade-out {
             opacity: 0;
             pointer-events: none;
         }
@@ -84,13 +103,13 @@
             51%, 100% { opacity: 0; }
         }
 
-        /* Main Content */
-        #main-content {
+        /* Main Content: visible by default, hidden only while the intro plays */
+        html.intro #main-content {
             opacity: 0;
             transition: opacity 0.8s ease 0.3s;
         }
 
-        #main-content.visible {
+        html.intro #main-content.visible {
             opacity: 1;
         }
 
@@ -198,7 +217,6 @@
             box-shadow: 0 0 10px var(--accent-glow);
         }
 
-        /* FIX: add margin-bottom to section so all sections have consistent spacing */
         section {
             margin-bottom: 80px;
         }
@@ -253,7 +271,6 @@
             margin-bottom: 20px;
         }
 
-        /* FIX: add styling for card-icon images */
         .card-icon {
             width: 48px;
             height: 48px;
@@ -365,9 +382,8 @@
                 <a href="files/Resume.pdf" class="header-link">Resume</a>
                 <a href="blog/blog.html" class="header-link">Blog</a>
                 <a href="https://github.com/AzureADTrent/" class="header-link" target="_blank">GitHub</a>
-                <!-- FIX: closing quote was missing on target="_blank" -->
-                <a href="llm-vram-calculator.html" class="header-link" target="_blank">LLM VRAM Calculator</a>
-				<a href="llm-size-guide.html" class="header-link" target="_blank">LLM Size Guide</a>
+                <a href="llm-vram-calculator.html" class="header-link">LLM VRAM Calculator</a>
+                <a href="llm-size-guide.html" class="header-link">LLM Size Guide</a>
             </div>
         </header>
 
@@ -386,6 +402,7 @@
                 <h2 class="section-title">Security Profiles</h2>
                 <div class="grid">
 					<div class="card">
+						<img src="images/advisory-bug.svg" alt="Advisories" class="card-icon" onerror="this.style.display='none'">
 						<h3>Security Advisories</h3>
 						<p>CVEs and advisories credited to me.</p>
 						<a href="/advisories.html" class="card-link">View Advisories →</a>
@@ -438,14 +455,16 @@
                 <h2 class="section-title">Resources</h2>
                 <div class="grid">
                     <div class="card">
+                        <img src="images/ctf-flag.svg" alt="CTF" class="card-icon" onerror="this.style.display='none'">
                         <h3>CTF Walkthroughs</h3>
                         <p>Detailed write-ups and methodologies for various challenges and machines.</p>
-                        <a href="ctf-writeups/index.html" class="card-link" target="_blank">
+                        <a href="ctf-writeups/index.html" class="card-link">
                             Read Walkthroughs →
                         </a>
                     </div>
 
                     <div class="card">
+                        <img src="images/contact-card.svg" alt="LinkedIn" class="card-icon" onerror="this.style.display='none'">
                         <h3>LinkedIn</h3>
                         <p>Connect professionally and stay updated on my latest projects and insights.</p>
                         <a href="https://www.linkedin.com/in/azureadtrent" class="card-link" target="_blank">
@@ -462,20 +481,28 @@
     </div>
 
     <script>
-        // Terminal intro animation
-        const terminalIntro = document.getElementById('terminal-intro');
-        const mainContent = document.getElementById('main-content');
+        // Terminal intro animation (only when the head script enabled it)
+        if (document.documentElement.classList.contains('intro')) {
+            const terminalIntro = document.getElementById('terminal-intro');
+            const mainContent = document.getElementById('main-content');
+            let done = false;
 
-        // Wait for terminal animation to complete (2.5s) then fade out
-        setTimeout(() => {
-            terminalIntro.classList.add('fade-out');
-            mainContent.classList.add('visible');
-            
-            // Remove terminal from DOM after fade
-            setTimeout(() => {
-                terminalIntro.style.display = 'none';
-            }, 500);
-        }, 2500);
+            const finishIntro = () => {
+                if (done) return;
+                done = true;
+                terminalIntro.classList.add('fade-out');
+                mainContent.classList.add('visible');
+                // Remove terminal from view after fade
+                setTimeout(() => { terminalIntro.style.display = 'none'; }, 500);
+            };
+
+            // Let visitors skip it with a click or any key
+            terminalIntro.addEventListener('click', finishIntro);
+            document.addEventListener('keydown', finishIntro, { once: true });
+
+            // Otherwise wait for the animation to complete (2.5s)
+            setTimeout(finishIntro, 2500);
+        }
     </script>
 </body>
 </html>
